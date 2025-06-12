@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Workstation</title>
+  <link rel="stylesheet" href="styles.css?v=4"/>
+  <style>
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-color: rgba(0, 0, 0, 0.6);
+      display: none; align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 10px;
+      width: 350px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      font-family: sans-serif;
+    }
+    .close-btn {
+      float: right;
+      font-size: 22px;
+      cursor: pointer;
+      color: red;
+    }
+    
+        .btn.not-working {
+      background-color: red !important;
+      color: white;
+    }
+    .btn {
+      padding: 40px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #169e13; /* Default: AVAILABLE */
+      color: white;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+      width: 150px;
+    }
+    
+    .btn:hover {
+      background-color: #808080;
+    }
+    .legend_2 {
+    position: absolute;
+    right:150px;
+    top: 250px;
+    transform: translateY(-50%);
+    color: rgb(252, 252, 252);
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 25px;
+    margin-top: 5px;}
+    
+    /* workstation buttons */
+    .workstation-layout {
+        margin-top: 30px;
+        text-align: center;
+        padding: 20px;
+        width: 100%;
+    }
+    
+    .workstation-layout h2 {
+        font-size: 30px;
+        margin-bottom: 30px;
+    }
+    
+    #buttons-container {
+        display: flex;
+        justify-content: center;
+        gap: 60px;
+        flex-wrap: nowrap;
+    }
+    
+    .column {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="kiosk-container">
+    <div class="report-header-unique">
+      <h1>STUDENT WORKSTATION</h1>
+      <div class="maintenance-info-unique">
+        <img src="images/user_icon.png" alt="User Icon" />
+        <div class="maintenance-text-unique">
+          <strong id="userName">Instructor Name</strong><br />
+          <span id="userEmail">Instructor Email</span>
+        </div>
+      </div>
+      <button class="back-btn-unique" onclick="location.href='index.html'">⮌</button>
+    </div>
+
+    <div class="section-container-unique">
+      <div class="sec-info-unique">
+        <label for="year-sec">Year and Section:</label>
+        <div class="input-box-supplementary" id="sectionBox"></div>
+      </div>
+      <div class="sub-info-unique">
+        <label for="sub-course">Subject Course:</label>
+        <div class="input-box-unique" id="subjectBox"></div>
+      </div>
+    </div>
+
+    <div class="legend_2">
+      <div>🟡 OCCUPIED /</div>
+      <div>🟢 AVAILABLE /</div>
+      <div>🔴 NOT WORKING</div>
+    </div>
+
+    <div class="workstation-layout">
+      <h2>FRONT (White Board/ Teacher's Table)</h2>
+      <div id="buttons-container">
+        <div class="column">
+          <script>
+            let columnCount = 1;
+            for (let i = 1; i <= 40; i++) {
+              document.write(`<button class="btn" onclick="promptUser(${i})">PC ${i}</button>`);
+              if (i % 10 === 0 && i !== 40) {
+                columnCount++;
+                document.write('</div><div class="column">');
+              }
+            }
+          </script>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="studentModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">×</span>
+      <h3>Student Info</h3>
+      <p><strong>ID:</strong> <span id="modalID"></span></p>
+      <p><strong>Name:</strong> <span id="modalName"></span></p>
+      <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+      <p><strong>Section:</strong> <span id="modalSection"></span></p>
+      <p><strong>Subject:</strong> <span id="modalSubject"></span></p>
+    </div>
+  </div>
+
+<script>
+  // ✅ Mapping PC numbers to assigned IP addresses
+  const pcIpMap = {
+    1: "172.17.10.0",
+    2: "192.168.254.102",
+    3: "192.168.254.103",
+    4: "192.168.254.104",
+    5: "172.17.8.57",
+    6: "192.168.254.106",
+    7: "192.168.254.107",
+    8: "192.168.254.108",
+    9: "192.168.254.109",
+    10: "192.168.254.110",
+    11: "192.168.254.111",
+    12: "192.168.254.112",
+    13: "192.168.254.113",
+    14: "192.168.254.114",
+    15: "192.168.254.115",
+    16: "192.168.254.116",
+    17: "172.17.8.56",
+    18: "192.168.254.118",
+    19: "172.17.9.50",
+    20: "192.168.254.120",
+    21: "192.168.254.121",
+    22: "192.168.254.122",
+    23: "192.168.254.123",
+    24: "192.168.254.124",
+    25: "192.168.254.125",
+    26: "192.168.254.126",
+    27: "192.168.254.127",
+    28: "192.168.254.128",
+    29: "172.17.10.99",
+    30: "192.168.254.130",
+    31: "192.168.254.131",
+    32: "192.168.254.132",
+    33: "192.168.254.133",
+    34: "192.168.254.134",
+    35: "192.168.254.135",
+    36: "192.168.254.136",
+    37: "192.168.254.137",
+    38: "192.168.254.138",
+    39: "192.168.254.139",
+    40: "192.168.254.140"
+  };
+
+  const studentInfoMap = {};
+
+  function promptUser(pcNumber) {
+    const rfid = prompt("Please scan your student ID for PC " + pcNumber);
+    if (!rfid) {
+      alert("❌ No RFID provided.");
+      return;
+    }
+
+    fetch("backend/get_student_schedule.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `rfid_code=${encodeURIComponent(rfid)}`
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        fetch("backend/check_existing_workstation.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `pc_number=${pcNumber}&rfid_code=${rfid}&schedule_id=${data.schedule_id}`
+        })
+        .then(res => res.json())
+        .then(check => {
+          if (!check.exists) {
+            assignWorkstation(pcNumber, rfid, data);
+          } else {
+            alert("⚠️ You already selected a workstation for this subject.");
+          }
+        });
+      } else {
+        alert("⛔ " + data.message);
+      }
+    })
+    .catch(err => {
+      console.error("Fetch error:", err);
+      alert("❌ Error fetching student schedule.");
+    });
+  }
+
+  function assignWorkstation(pcNumber, rfid, data) {
+    fetch("backend/assign_workstation.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `rfid_code=${encodeURIComponent(rfid)}&schedule_id=${encodeURIComponent(data.schedule_id)}&pc_number=${encodeURIComponent(pcNumber)}`
+    })
+    .then(res => res.json())
+    .then(resp => {
+      if (resp.success) {
+        document.getElementById("userName").innerText = data.instructor_name;
+        document.getElementById("userEmail").innerText = data.instructor_email;
+        document.getElementById("sectionBox").innerText = data.section;
+        document.getElementById("subjectBox").innerText = data.subject;
+
+        localStorage.setItem("instructor_name", data.instructor_name);
+        localStorage.setItem("instructor_email", data.instructor_email);
+        localStorage.setItem("section", data.section);
+        localStorage.setItem("subject", data.subject);
+        localStorage.setItem("last_rfid", rfid);
+        localStorage.setItem("last_schedule_id", data.schedule_id);
+
+        const button = document.querySelector(`.btn[onclick="promptUser(${pcNumber})"]`);
+        if (button) {
+          button.style.backgroundColor = 'yellow';
+          button.style.color = 'black';
+          button.innerText = `PC ${pcNumber}`;
+          button.onclick = () => showStudentInfo(pcNumber);
+        }
+
+        studentInfoMap[pcNumber] = {
+          id: data.student_id,
+          name: data.student_name,
+          email: data.student_email,
+          section: data.section,
+          subject: data.subject
+        };
+
+        const saved = JSON.parse(localStorage.getItem("occupiedPCs") || "{}");
+        saved[pcNumber] = studentInfoMap[pcNumber];
+        localStorage.setItem("occupiedPCs", JSON.stringify(saved));
+
+        alert(resp.message);
+
+        // ✅ Unlock PC via socket
+        const targetIP = pcIpMap[pcNumber];
+        if (targetIP) {
+          fetch("backend/send_unlock_socket.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `ip=${encodeURIComponent(targetIP)}&rfid=${encodeURIComponent(rfid)}`
+          })
+          .then(res => res.text())
+          .then(response => {
+            console.log(`✅ Unlock sent to PC ${pcNumber} (${targetIP})`);
+          })
+          .catch(err => {
+            console.error("❌ Unlock error:", err);
+          });
+        }
+      } else {
+        alert("⛔ " + resp.message);
+      }
+    });
+  }
+
+  function showStudentInfo(pcNumber) {
+    const info = studentInfoMap[pcNumber];
+    if (!info) return;
+    document.getElementById("modalID").innerText = info.id;
+    document.getElementById("modalName").innerText = info.name;
+    document.getElementById("modalEmail").innerText = info.email;
+    document.getElementById("modalSection").innerText = info.section;
+    document.getElementById("modalSubject").innerText = info.subject;
+    document.getElementById("studentModal").style.display = "flex";
+  }
+
+  function closeModal() {
+    document.getElementById("studentModal").style.display = "none";
+  }
+
+  function checkExpiry() {
+    fetch("backend/check_schedule_expiry.php", {
+      method: "POST"
+    })
+    .then(res => res.text())
+    .then(text => {
+      console.log("⏱️ Expiry check:", text);
+      try {
+        const data = JSON.parse(text);
+        if (data.active === false) {
+          console.log("🛑 Class expired!");
+          fetch("backend/update_time_out.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `rfid_code=${localStorage.getItem("last_rfid")}&schedule_id=${localStorage.getItem("last_schedule_id")}`
+          }).then(() => {
+            localStorage.clear();
+            location.reload();
+          });
+        }
+      } catch (e) {
+        console.error("❌ JSON parse error:", e);
+      }
+    })
+    .catch(err => {
+      console.error("❌ Expiry check failed:", err);
+    });
+  }
+
+  window.onload = function () {
+    const savedInstructor = localStorage.getItem("instructor_name");
+    const savedEmail = localStorage.getItem("instructor_email");
+    const savedSection = localStorage.getItem("section");
+    const savedSubject = localStorage.getItem("subject");
+
+    if (savedInstructor) document.getElementById("userName").innerText = savedInstructor;
+    if (savedEmail) document.getElementById("userEmail").innerText = savedEmail;
+    if (savedSection) document.getElementById("sectionBox").innerText = savedSection;
+    if (savedSubject) document.getElementById("subjectBox").innerText = savedSubject;
+
+    const savedPCs = JSON.parse(localStorage.getItem("occupiedPCs") || "{}");
+    for (const pc in savedPCs) {
+      const btn = document.querySelector(`.btn[onclick="promptUser(${pc})"]`);
+      if (btn) {
+        btn.style.backgroundColor = "yellow";
+        btn.style.color = "black";
+        btn.innerText = `PC ${pc}`;
+        btn.onclick = () => showStudentInfo(pc);
+        studentInfoMap[pc] = savedPCs[pc];
+      }
+    }
+
+    fetch("backend/get_computers_with_issues.php")
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.issues)) {
+          data.issues.forEach(pc => {
+            const btn = document.querySelector(`.btn[onclick="promptUser(${pc})"]`);
+            if (btn) {
+              btn.classList.add("not-working");
+              btn.disabled = true;
+            }
+          });
+        }
+      });
+
+    setInterval(checkExpiry, 30000);
+  };
+</script>
+</body>
+</html>

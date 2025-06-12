@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css?v=11">
+    <style>
+  .logout-btn {
+    background-color: #c0392b;
+    color: white;
+    padding: 12px 20px;
+    font-size: 25px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    position: absolute;
+    top: 35px;
+    right: 30px;
+    z-index: 1000;
+  }
+</style>
+</head>
+<body>
+    <div class="kiosk-container">
+        <!-- Header -->
+        <header>
+            <h1>Welcome to <br> Computer Laboratory 1</h1>
+            <button onclick="confirmLogout()" class="logout-btn">🚪 Logout</button>
+        </header>
+        
+        <div class="workstation-container">
+            <button class="workstation-btn" onclick="location.href='crud.html'">Add</button>
+          </div>
+
+        <!-- University Logo -->
+        <div class="logo-container">
+            <img src="images/UBLC.png" alt="University of Batangas">
+        </div>
+
+        <!-- Admin Dashboard Panel -->
+        <div class="access-panel">
+            <h2>ADMIN DASHBOARD</h2>
+
+            <!-- First Row: Report Usage & Repair Update -->
+            <div class="first-row">
+                <button class="dashboard-btn" onclick="location.href='report_dashboard.html'">Report Dashboard</button>
+                <button class="dashboard-btn" onclick="location.href='RR_schedclass_dashboard.html'">Repair Update</button>
+            </div>
+
+            <!-- Second Row: Updating Schedule -->
+            <button class="dashboard-btn prepend" onclick="location.href='updating_dashboard.html'">Updating Schedule</button>
+        </div>
+
+        <!-- Mascot Image -->
+        <div class="mascot">
+            <img src="images/mascot.png" alt="University Mascot">
+        </div>
+    </div>
+    <script>
+      function confirmLogout() {
+        if (confirm("Continue to logout?")) {
+          window.location.href = 'backend/logout.php'; // 🔁 Proper logout path
+        }
+      }
+      
+      fetch("backend/check_session.php")
+        .then(res => res.json())
+        .then(data => {
+          console.log("Session check:", data); // 🔍 Debug
+          
+          if (!data.logged_in) {
+            alert("⚠️ Unauthorized access. Redirecting to login...");
+            window.location.href = "index.html";
+          }
+        })
+        .catch(err => {
+          console.error("Session check failed:", err);
+          window.location.href = "index.html"; // Failsafe
+        });
+    </script>
+</body>
+</html>
